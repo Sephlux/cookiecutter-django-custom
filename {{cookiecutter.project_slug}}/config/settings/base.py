@@ -89,6 +89,12 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
+    "django_tables2",
+    "django_htmx",
+    "simple_history",
+    "django_cotton",
+    "stronghold",
+    "django_guid",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
@@ -160,6 +166,7 @@ MIDDLEWARE = [
 {%- if cookiecutter.use_whitenoise == 'y' %}
     "whitenoise.middleware.WhiteNoiseMiddleware",
 {%- endif %}
+    "django_guid.middleware.guid_middleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -168,6 +175,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
+    "stronghold.middleware.LoginRequiredMiddleware",
 ]
 
 # STATIC
@@ -270,9 +280,14 @@ DJANGO_ADMIN_FORCE_ALLAUTH = env.bool("DJANGO_ADMIN_FORCE_ALLAUTH", default=Fals
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    'filters': {
+        'correlation_id': {
+            '()': 'django_guid.log_filters.CorrelationId'
+        }
+    },
     "formatters": {
         "verbose": {
-            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s",
+            "format": "%(levelname)s %(asctime)s [%(correlation_id)s] %(module)s %(process)d %(thread)d %(message)s",
         },
     },
     "handlers": {
@@ -280,6 +295,7 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
+            'filters': ['correlation_id'],
         },
     },
     "root": {"level": "INFO", "handlers": ["console"]},
