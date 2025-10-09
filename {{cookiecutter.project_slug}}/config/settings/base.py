@@ -98,6 +98,7 @@ THIRD_PARTY_APPS = [
     "stronghold",
     "django_guid",
     "template_partials",
+    "widget_tweaks",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
