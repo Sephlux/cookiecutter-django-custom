@@ -1,5 +1,5 @@
 {# django/forms/field.html #}
-<div class="form-control w-full mb-4">
+{% raw %}<div class="form-control w-full mb-4">
     <label class="label">
         <span class="label-text font-medium">{{ label }}</span>
         {% if required %}
@@ -40,4 +40,4 @@
             {% endfor %}
         </label>
     {% endif %}
-</div>
+</div>{% endraw %}

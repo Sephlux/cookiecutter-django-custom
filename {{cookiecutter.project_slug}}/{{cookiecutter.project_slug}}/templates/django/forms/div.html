@@ -1,5 +1,5 @@
 {# django/forms/div.html #}
-<div class="form-control w-full mb-4">
+{% raw %}<div class="form-control w-full mb-4">
     {% if errors %}
         <div class="alert alert-error mb-2">
             {% for error in errors %}
@@ -8,4 +8,4 @@
         </div>
     {% endif %}
     {{ fields }}
-</div>
+</div>{% endraw %}
