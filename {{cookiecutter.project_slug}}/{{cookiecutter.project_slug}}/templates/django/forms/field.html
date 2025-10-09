@@ -1,0 +1,43 @@
+{# django/forms/field.html #}
+<div class="form-control w-full mb-4">
+    <label class="label">
+        <span class="label-text font-medium">{{ label }}</span>
+        {% if required %}
+            <span class="label-text-alt text-error">*</span>
+        {% endif %}
+    </label>
+
+    {% if widget.input_type == "select" %}
+        <select name="{{ name }}" class="select select-bordered w-full" {% if required %}required{% endif %}>
+            {{ widget }}
+        </select>
+
+    {% elif widget.input_type == "checkbox" %}
+        <div class="flex items-center">
+            {{ widget }}
+            <span class="label-text ml-2">{{ help_text }}</span>
+        </div>
+
+    {% elif widget.input_type == "textarea" %}
+        <textarea name="{{ name }}"
+                  class="textarea textarea-bordered w-full h-24"
+                  {% if required %}required{% endif %}>{{ widget }}</textarea>
+
+    {% else %}
+        {{ widget|add_class:"input input-bordered w-full" }}
+    {% endif %}
+
+    {% if help_text and widget.input_type != "checkbox" %}
+        <label class="label">
+            <span class="label-text-alt text-gray-600">{{ help_text }}</span>
+        </label>
+    {% endif %}
+
+    {% if errors %}
+        <label class="label">
+            {% for error in errors %}
+                <span class="label-text-alt text-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+    {% endif %}
+</div>

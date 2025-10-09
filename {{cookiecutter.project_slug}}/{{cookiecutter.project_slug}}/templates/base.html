@@ -23,6 +23,8 @@
   <meta name="author"
         content="{% endraw %}{{ cookiecutter.author_name }}{% raw %}" />
   <link rel="icon" href="{% static 'images/favicons/favicon.ico' %}" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   {% block css %}
   {%- endraw %}
   {%- if cookiecutter.frontend_pipeline in ['None', 'Django Compressor'] %}
@@ -76,6 +78,7 @@
 {% render_bundle 'vendors' 'js' attrs='defer' %}
 {%- endraw %}
 {% else %}
+{%- if cookiecutter.use_crispy_with_bootstrap == 'y' %}
 {% raw %}
 <!-- Bootstrap JS -->
 <script defer
@@ -85,6 +88,7 @@
         referrerpolicy="no-referrer"></script>
 <!-- Your stuff: Third-party javascript libraries go here -->
 {%- endraw %}
+  {%- endif %}
 {% endif %}
 {% raw %}
 <!-- place project specific Javascript in this file -->

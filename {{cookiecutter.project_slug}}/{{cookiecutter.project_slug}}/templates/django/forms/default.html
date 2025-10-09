@@ -1,0 +1,9 @@
+{# django/forms/default.html #}
+{% if errors and not fields %}
+    <div class="alert alert-error mb-4">
+        {% for error in errors %}
+            <span>{{ error }}</span>
+        {% endfor %}
+    </div>
+{% endif %}
+{% for field in fields %}{{ field }}{% endfor %}

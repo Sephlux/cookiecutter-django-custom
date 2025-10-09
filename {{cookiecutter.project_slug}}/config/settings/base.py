@@ -83,8 +83,10 @@ DJANGO_APPS = [
     "django.forms",
 ]
 THIRD_PARTY_APPS = [
+{%- if cookiecutter.use_crispy_with_bootstrap == 'y' %}
     "crispy_forms",
     "crispy_bootstrap5",
+{%- endif %}
     "allauth",
     "allauth.account",
     "allauth.mfa",
@@ -95,6 +97,7 @@ THIRD_PARTY_APPS = [
     "django_cotton",
     "stronghold",
     "django_guid",
+    "template_partials",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
