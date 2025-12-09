@@ -97,8 +97,10 @@ THIRD_PARTY_APPS = [
     "django_cotton",
     "stronghold",
     "django_guid",
-    "template_partials",
     "widget_tweaks",
+    "tailwind",
+    "theme",
+    "django_browser_reload",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
@@ -170,6 +172,7 @@ MIDDLEWARE = [
 {%- if cookiecutter.use_whitenoise == 'y' %}
     "whitenoise.middleware.WhiteNoiseMiddleware",
 {%- endif %}
+    "django.middleware.gzip.GZipMiddleware",
     "django_guid.middleware.guid_middleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -182,6 +185,8 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "stronghold.middleware.LoginRequiredMiddleware",
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
+    "subdomains.middleware.SubdomainURLRoutingMiddleware",
 ]
 
 # STATIC
@@ -422,3 +427,6 @@ WEBPACK_LOADER = {
 {%- endif %}
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+TAILWIND_APP_NAME = 'theme'
+INTERNAL_IPS = ["127.0.0.1"]  # Required for live reload

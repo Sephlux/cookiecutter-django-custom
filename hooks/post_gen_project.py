@@ -411,6 +411,41 @@ def remove_drf_starter_files():
     shutil.rmtree(Path("{{cookiecutter.project_slug}}", "users", "api"))
     shutil.rmtree(Path("{{cookiecutter.project_slug}}", "users", "tests", "api"))
 
+def setup_venv():
+    try:
+        project_name = "{{ cookiecutter.project_name }}"
+        project_dir = Path(project_name)
+        venv_path = project_dir / ".venv"
+
+        # 1. Create virtual environment
+        subprocess.check_call([sys.executable, "-m", "venv", str(venv_path)])
+
+        # 2. Install dependencies (including Django)
+        pip_exe = venv_path / "bin" / "pip"
+        subprocess.check_call([str(pip_exe), "install", "django"])
+        print("✅ Venv initialized and installed successfully!")
+
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error during setup: {e}")
+
+def install_tailwind():
+    try:
+        subprocess.check_call([sys.executable, "manage.py", "tailwind", "install"])
+        print("Tailwind installed successfully!")
+    except subprocess.CalledProcessError as e:
+        print(f"Error running tailwind install: {e}")
+
+def init_tailwind():
+    try:
+        subprocess.check_call([sys.executable, "uv", "venv"])
+        subprocess.run(
+            [sys.executable, "manage.py", "tailwind", "init"],
+            input=b"theme\n1\n",
+            check=True
+        )
+        print("Tailwind init successfully!")
+    except subprocess.CalledProcessError as e:
+        print(f"Error running tailwind init: {e}")
 
 def main():  # noqa: C901, PLR0912, PLR0915
     debug = "{{ cookiecutter.debug }}".lower() == "y"
@@ -506,6 +541,10 @@ def main():  # noqa: C901, PLR0912, PLR0915
         remove_async_files()
 
     setup_dependencies()
+
+    # setup_venv()
+    init_tailwind()
+    install_tailwind()
 
     print(SUCCESS + "Project initialized, keep up the good work!" + TERMINATOR)
 
