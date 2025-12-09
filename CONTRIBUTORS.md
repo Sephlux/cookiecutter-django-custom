@@ -1077,6 +1077,13 @@ Listed in alphabetical order.
     <td></td>
   </tr>
   <tr>
+    <td>Harshit Ranjan</td>
+    <td>
+      <a href="https://github.com/HarshitR2004">HarshitR2004</a>
+    </td>
+    <td></td>
+  </tr>
+  <tr>
     <td>Haseeb ur Rehman</td>
     <td>
       <a href="https://github.com/professorhaseeb">professorhaseeb</a>
@@ -1325,6 +1332,13 @@ Listed in alphabetical order.
     <td>Joseph Hanna</td>
     <td>
       <a href="https://github.com/sanchimenea">sanchimenea</a>
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Josh596</td>
+    <td>
+      <a href="https://github.com/Josh596">Josh596</a>
     </td>
     <td></td>
   </tr>
@@ -1787,6 +1801,13 @@ Listed in alphabetical order.
     <td>MinWoo Sung</td>
     <td>
       <a href="https://github.com/SungMinWoo">SungMinWoo</a>
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Mohamed Feddad</td>
+    <td>
+      <a href="https://github.com/mrf345">mrf345</a>
     </td>
     <td></td>
   </tr>
@@ -2312,6 +2333,13 @@ Listed in alphabetical order.
     <td>Tom Offermann</td>
     <td>
       <a href="https://github.com/"></a>
+    </td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Tosinibikunle</td>
+    <td>
+      <a href="https://github.com/Tosinibikunle">Tosinibikunle</a>
     </td>
     <td></td>
   </tr>
