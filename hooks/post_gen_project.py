@@ -6,6 +6,7 @@ import shutil
 import string
 import subprocess
 import sys
+import re
 from pathlib import Path
 
 try:
@@ -24,6 +25,103 @@ SUCCESS = "\x1b[1;32m [SUCCESS]: "
 
 DEBUG_VALUE = "debug"
 
+def _app_present_in_settings_text(text: str, app_label: str) -> bool:
+    """
+    Return True if `app_label` appears inside any of:
+      - DJANGO_APPS = [ ... ]
+      - THIRD_PARTY_APPS = [ ... ]
+      - LOCAL_APPS = [ ... ]
+      - INSTALLED_APPS = [ ... ]
+      - INSTALLED_APPS += [ ... ]
+    This ignores occurrences elsewhere (e.g., TAILWIND_APP_NAME = "theme").
+    """
+    quoted = rf'["\']{re.escape(app_label)}["\']'
+
+    # Match list assignments like NAME = [ ... ]
+    list_assign_re = re.compile(
+        r'(?ms)^\s*(DJANGO_APPS|THIRD_PARTY_APPS|LOCAL_APPS|INSTALLED_APPS)\s*=\s*\[(.*?)\]'
+    )
+    for m in list_assign_re.finditer(text):
+        content = m.group(2)
+        if re.search(quoted, content):
+            return True
+
+    # Match incremental additions like INSTALLED_APPS += [ ... ]
+    list_plus_re = re.compile(r'(?ms)^\s*INSTALLED_APPS\s*\+=\s*\[(.*?)\]')
+    for m in list_plus_re.finditer(text):
+        content = m.group(1)
+        if re.search(quoted, content):
+            return True
+
+    return False
+
+def _insert_app_into_list_in_file(file_path: Path, list_name: str, app_label: str) -> bool:
+    """
+    Insert `app_label` into a Python list named `list_name` in `file_path`.
+    Handles flexible whitespace around the assignment and avoids duplicates.
+    Returns True if a change was made.
+    """
+    if not file_path.exists():
+        print(f"[post_gen] Settings file not found: {file_path}")
+        return False
+
+    text = file_path.read_text(encoding="utf-8")
+
+    # Avoid duplicates (accept single or double quotes anywhere in file)
+    if _app_present_in_settings_text(text, app_label):
+        print(f"[post_gen] '{app_label}' already present in {file_path}")
+        return False
+
+    # Match list header with flexible spacing: e.g. "THIRD_PARTY_APPS = ["
+    header_re = re.compile(rf"(^\s*{re.escape(list_name)}\s*=\s*\[)", re.MULTILINE)
+    header_match = header_re.search(text)
+    if not header_match:
+        print(f"[post_gen] Could not find list header for '{list_name}' in {file_path}")
+        return False
+
+    # Find matching closing ']' starting from just after the '[' of the header
+    start = header_match.end() - 1  # position of '['
+    depth = 0
+    close_idx = None
+    for i in range(start, len(text)):
+        ch = text[i]
+        if ch == "[":
+            depth += 1
+        elif ch == "]":
+            depth -= 1
+            if depth == 0:
+                close_idx = i
+                break
+
+    if close_idx is None:
+        print(f"[post_gen] Unbalanced brackets parsing '{list_name}' in {file_path}")
+        return False
+
+    # Determine indentation from the first non-empty, non-comment item line; default to 4 spaces
+    block = text[start:close_idx + 1]
+    inferred_indent = "    "
+    for ln in block.splitlines()[1:]:
+        if ln.strip() and not ln.lstrip().startswith("#"):
+            # preserve existing indentation style
+            inferred_indent = ln[: len(ln) - len(ln.lstrip(" \t"))] or inferred_indent
+            break
+
+    insertion = f'{inferred_indent}"{app_label}",\n'
+    new_text = text[:close_idx] + insertion + text[close_idx:]
+
+    file_path.write_text(new_text, encoding="utf-8")
+    print(f"[post_gen] Added '{app_label}' to {list_name} in {file_path}")
+    return True
+
+def add_installed_app(app_label: str, section: str = "THIRD_PARTY_APPS") -> None:
+    """
+    Add an app to DJANGO_APPS, THIRD_PARTY_APPS, or LOCAL_APPS in config/settings/base.py.
+    """
+    settings_path = Path("config") / "settings" / "base.py"
+    changed = _insert_app_into_list_in_file(settings_path, section, app_label)
+    if not changed:
+        # Emit a final hint if no change was made
+        print(f"[post_gen] No changes applied when adding '{app_label}' to {section}.")
 
 def remove_open_source_files():
     file_names = ["CONTRIBUTORS.txt", "LICENSE"]
@@ -412,41 +510,132 @@ def remove_drf_starter_files():
     shutil.rmtree(Path("{{cookiecutter.project_slug}}", "users", "api"))
     shutil.rmtree(Path("{{cookiecutter.project_slug}}", "users", "tests", "api"))
 
+def _bool_from_ctx(value: str, default: bool = False) -> bool:
+    if value is None:
+        return default
+    return str(value).strip().lower() in {"1", "true", "yes", "y", "on"}
+
+def ensure_installed_app(app_label: str) -> bool:
+    """
+    Ensure `app_label` is present by appending:
+        INSTALLED_APPS += ["app_label"]
+    to the end of base.py.
+    Returns True if a write occurred, False if already present.
+    """
+    settings_path = _find_settings_base()
+    text = settings_path.read_text(encoding="utf-8")
+
+    # Duplicate check (single or double quotes)
+    if f"'{app_label}'" in text or f'"{app_label}"' in text:
+        print(f"[post_gen] '{app_label}' already present in {settings_path}")
+        return False
+
+    addition = f'\n# Added by post_gen hook\nINSTALLED_APPS += ["{app_label}"]\n'
+    settings_path.write_text(text + addition, encoding="utf-8")
+    print(f"[post_gen] Appended '{app_label}' to INSTALLED_APPS in {settings_path}")
+    return True
+
 def setup_venv():
     try:
         project_name = "{{ cookiecutter.project_name }}"
-        project_dir = Path(project_name)
-        venv_path = project_dir / ".venv"
+        project_dir = project_dir = Path.cwd() #Path(project_name)
+        print(f"Project Dir: {project_dir}")
+        # venv_path = project_dir / ".venv"
+        #
+        # # 1. Create virtual environment
+        # subprocess.check_call([sys.executable, "-m", "venv", str(venv_path)])
+        #
+        # # 2. Install dependencies (including Django)
+        # pip_exe = venv_path / "bin" / "pip"
+        # subprocess.check_call([str(pip_exe), "install", "django"])
+        # print("✅ Venv initialized and installed successfully!")
+        auto_install = _bool_from_ctx("{{ cookiecutter.auto_install_dependencies|default('true') }}")
+        # Skip in CI unless explicitly enabled via template flag
+        if os.environ.get("CI") and not auto_install:
+            print("CI detected; skipping 'uv sync'.")
+            return
+        if not auto_install:
+            print("Auto dependency install is disabled (auto_install_dependencies=false).")
+            return
 
-        # 1. Create virtual environment
-        subprocess.check_call([sys.executable, "-m", "venv", str(venv_path)])
+        uv_path = shutil.which("uv")
+        if not uv_path:
+            print("uv is not installed or not on PATH; skipping auto install.")
+            return
 
-        # 2. Install dependencies (including Django)
-        pip_exe = venv_path / "bin" / "pip"
-        subprocess.check_call([str(pip_exe), "install", "django"])
-        print("✅ Venv initialized and installed successfully!")
+        lock_exists = (project_dir / "uv.lock").exists()
+        pyproject_exists = (project_dir / "pyproject.toml").exists()
+        if not pyproject_exists:
+            print("pyproject.toml not found; skipping 'uv sync'.")
+            return
+
+        cmd = [uv_path, "sync"]
+        if lock_exists:
+            cmd.append("--locked")
+
+        print(f"Running: {' '.join(cmd)}")
+        try:
+            subprocess.check_call(cmd, cwd=str(project_dir))
+            print("Dependencies installed with uv.")
+        except subprocess.CalledProcessError as exc:
+            print(f"'uv sync' failed with exit code {exc.returncode}. You can run it manually later.")
 
     except subprocess.CalledProcessError as e:
         print(f"❌ Error during setup: {e}")
 
 def install_tailwind():
     try:
-        subprocess.check_call([sys.executable, "manage.py", "tailwind", "install"])
+        uv_path = shutil.which("uv")
+        if not uv_path:
+            print("uv is not installed or not on PATH; skipping init_tailwind.")
+            return
+
+        subprocess.check_call([uv_path, "run", "python", "manage.py", "tailwind", "install"])
+        app_name = "theme"
+        project_name = "{{ cookiecutter.project_name }}"
+        # subprocess.run(
+        #     ["mv", app_name, f"./{project_name}/{app_name}"],
+        #     text=True,
+        #     check=True
+        # )
         print("Tailwind installed successfully!")
     except subprocess.CalledProcessError as e:
         print(f"Error running tailwind install: {e}")
 
 def init_tailwind():
     try:
-        subprocess.check_call([sys.executable, "uv", "venv"])
+        uv_path = shutil.which("uv")
+        if not uv_path:
+            print("uv is not installed or not on PATH; skipping init_tailwind.")
+            return
+
+        app_name = "theme"
+        target_dir = Path(app_name)
+        if target_dir.exists():
+            print(f"[post_gen] Removing existing Tailwind app at: {target_dir}")
+            shutil.rmtree(target_dir)
+
         subprocess.run(
-            [sys.executable, "manage.py", "tailwind", "init"],
-            input=b"theme\n1\n",
+            [uv_path, "run", "python", "manage.py", "tailwind", "init", "--include-daisy-ui"],
+            input=f"{app_name}\n1\n",
+            text=True,
             check=True
         )
+        add_installed_app("theme", section="THIRD_PARTY_APPS")
         print("Tailwind init successfully!")
     except subprocess.CalledProcessError as e:
         print(f"Error running tailwind init: {e}")
+
+def install_tailwind_daisy():
+    try:
+        subprocess.check_call([sys.executable, "uv", "venv"])
+        subprocess.run(
+            [sys.executable, "manage.py", "tailwind", "plugin_install", "daisyui"],
+            check=True
+        )
+        print("DaisyUI init successfully!")
+    except subprocess.CalledProcessError as e:
+        print(f"Error running daisyUI install: {e}")
 
 def main():  # noqa: C901, PLR0912, PLR0915
     debug = "{{ cookiecutter.debug }}".lower() == "y"
@@ -544,15 +733,17 @@ def main():  # noqa: C901, PLR0912, PLR0915
 
     setup_dependencies()
 
-    # setup_venv()
+    setup_venv()
     init_tailwind()
     install_tailwind()
+    # install_tailwind_daisy()
 
     print(SUCCESS + "Project initialized, keep up the good work!" + TERMINATOR)
 
 
 def setup_dependencies():
     print("Installing python dependencies using uv...")
+    print(f"user docker: {{ cookiecutter.use_docker }}")
 
     if "{{ cookiecutter.use_docker }}".lower() == "y":
         # Build a trimmed down Docker image add dependencies with uv

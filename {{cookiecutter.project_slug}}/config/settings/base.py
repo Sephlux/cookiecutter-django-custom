@@ -54,7 +54,7 @@ DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES = {
     "default": env.db(
         "DATABASE_URL",
-        default="postgres://{% if cookiecutter.windows == 'y' %}localhost{% endif %}/{{cookiecutter.project_slug}}",
+        default="postgres://{% if cookiecutter.windows == 'y' %}postgres:postgres@localhost{% endif %}/{{cookiecutter.project_slug}}",
     ),
 }
 {%- endif %}
@@ -94,13 +94,12 @@ THIRD_PARTY_APPS = [
     "django_tables2",
     "django_htmx",
     "simple_history",
-    "django_cotton",
-    "stronghold",
+    # "django_cotton", #django 6 in build template partials
     "django_guid",
-    "widget_tweaks",
+    "widget_tweaks", # redundant to django-crispy-forms?
     "tailwind",
-    "theme",
     "django_browser_reload",
+    "django_hosts",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
@@ -165,6 +164,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
 MIDDLEWARE = [
+    "django_hosts.middleware.HostsRequestMiddleware",
     "django.middleware.security.SecurityMiddleware",
 {%- if cookiecutter.use_drf == 'y' %}
     "corsheaders.middleware.CorsMiddleware",
@@ -184,10 +184,14 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
-    "stronghold.middleware.LoginRequiredMiddleware",
-    "django_browser_reload.middleware.BrowserReloadMiddleware",
-    "subdomains.middleware.SubdomainURLRoutingMiddleware",
+    "django_hosts.middleware.HostsResponseMiddleware",
 ]
+
+if DEBUG:
+    # Add django_browser_reload middleware only in DEBUG mode
+    MIDDLEWARE += [
+        "django_browser_reload.middleware.BrowserReloadMiddleware",
+    ]
 
 # STATIC
 # ------------------------------------------------------------------------------
@@ -242,8 +246,8 @@ TEMPLATES = [
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 # http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
-CRISPY_TEMPLATE_PACK = "bootstrap5"
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+# CRISPY_TEMPLATE_PACK = "bootstrap5"
+# CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 # FIXTURES
 # ------------------------------------------------------------------------------
@@ -428,5 +432,21 @@ WEBPACK_LOADER = {
 # Your stuff...
 # ------------------------------------------------------------------------------
 
-TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = ["127.0.0.1"]  # Required for live reload
+
+#todo
+NPM_BIN_PATH = "/usr/local/bin/npm" #for django-tailwind
+
+#todo
+#https://prebuiltui.com/tailwind-templates/landing-saas-app-template
+
+#tailwind config
+TAILWIND_APP_NAME = "theme"
+
+# django-hosts config
+ROOT_URLCONF = "config.urls"         # your normal URLConf
+ROOT_HOSTCONF = "config.hosts"       # where your host patterns live
+DEFAULT_HOST = "www"                  # or "default"
+PARENT_HOST = "example.com"           # if you use subdomains, else omit
+# HOST_SCHEME = "https"               # set if needed
+# HOST_PORT = "8000"                  # set if you run on a custom port

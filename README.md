@@ -90,6 +90,8 @@ Now run it against this repo:
 
     uvx cookiecutter https://github.com/cookiecutter/cookiecutter-django
 
+    uvx cookiecutter ./ --no-input --config-file context.json -f --output-dir ../
+
 You'll be prompted for some values. Provide them, then a Django project will be created for you.
 
 **Warning**: After this point, change 'Daniel Greenfeld', 'pydanny', etc to your own information.

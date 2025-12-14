@@ -1,7 +1,5 @@
 {% raw %}{% extends "base.html" %}
 
-{% load crispy_forms_tags %}
-
 {% block title %}
 {% endraw %}
 {% if cookiecutter.username_type == "email" %}
@@ -25,7 +23,7 @@
       method="post"
       action="{% url 'users:update' %}">
   {% csrf_token %}
-  {{ form|crispy }}
+  {{ form }}
   <div class="control-group">
     <div class="controls">
       <button type="submit" class="btn btn-primary">Update</button>
