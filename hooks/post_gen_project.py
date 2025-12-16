@@ -617,7 +617,7 @@ def init_tailwind():
 
         subprocess.run(
             [uv_path, "run", "python", "manage.py", "tailwind", "init", "--include-daisy-ui"],
-            input=f"{app_name}\n1\n",
+            input=f"{app_name}\n2\ny\n",
             text=True,
             check=True
         )
@@ -625,17 +625,6 @@ def init_tailwind():
         print("Tailwind init successfully!")
     except subprocess.CalledProcessError as e:
         print(f"Error running tailwind init: {e}")
-
-def install_tailwind_daisy():
-    try:
-        subprocess.check_call([sys.executable, "uv", "venv"])
-        subprocess.run(
-            [sys.executable, "manage.py", "tailwind", "plugin_install", "daisyui"],
-            check=True
-        )
-        print("DaisyUI init successfully!")
-    except subprocess.CalledProcessError as e:
-        print(f"Error running daisyUI install: {e}")
 
 def main():  # noqa: C901, PLR0912, PLR0915
     debug = "{{ cookiecutter.debug }}".lower() == "y"

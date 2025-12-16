@@ -100,6 +100,7 @@ THIRD_PARTY_APPS = [
     "tailwind",
     "django_browser_reload",
     "django_hosts",
+    "landing_page",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
@@ -435,18 +436,16 @@ WEBPACK_LOADER = {
 INTERNAL_IPS = ["127.0.0.1"]  # Required for live reload
 
 #todo
-NPM_BIN_PATH = "/usr/local/bin/npm" #for django-tailwind
-
-#todo
 #https://prebuiltui.com/tailwind-templates/landing-saas-app-template
 
 #tailwind config
 TAILWIND_APP_NAME = "theme"
+NPM_BIN_PATH = "npm.cmd"
 
 # django-hosts config
 ROOT_URLCONF = "config.urls"         # your normal URLConf
 ROOT_HOSTCONF = "config.hosts"       # where your host patterns live
 DEFAULT_HOST = "www"                  # or "default"
-PARENT_HOST = "example.com"           # if you use subdomains, else omit
+# PARENT_HOST = "example.com"           # if you use subdomains, else omit
 # HOST_SCHEME = "https"               # set if needed
 # HOST_PORT = "8000"                  # set if you run on a custom port
