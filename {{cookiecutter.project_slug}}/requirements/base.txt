@@ -48,6 +48,7 @@ django-widget-tweaks==1.5.0 #not updated?
 django-tailwind[cookiecutter,reload]==4.4.2
 django-hosts==7.0.0 #https://pypi.org/project/django-hosts/ #https://dev.to/ksharma20/how-to-use-subdomains-for-different-apps-in-django-project--fbi
 #django-debug-toolbar # already in cookiecutter?
+pyjwt[crypto]>=2.8
 {%- if cookiecutter.frontend_pipeline == 'Django Compressor' %}
 django-compressor==4.6.0  # https://github.com/django-compressor/django-compressor
 {%- endif %}
