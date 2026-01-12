@@ -1,0 +1,51 @@
+<!-- templates/account/base_auth.html -->
+{% raw %}{% load static %}
+{% load static tailwind_tags %}
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block head_title %}{% block title %}{% endblock %} · Auth{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Ensure your Tailwind + daisyUI build outputs a single CSS file -->
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% tailwind_css %}
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    }
+  </style>
+</head>
+<body class="min-h-dvh bg-linear-to-t from-sky-500 to-indigo-500">
+{#bg-linear-to-t from-sky-500 to-indigo-500#}
+<div class="flex min-h-dvh items-start justify-center p-4">
+  <div class="w-full max-w-md justify-center flex flex-col items-center mt-16">
+    <div class="mb-10 flex items-center justify-between">
+      <a href="/" class="btn btn-ghost px-0 text-xl font-semibold">YourSaaS</a>
+    </div>
+
+    {#      <div class="card bg-base-200 shadow-xl backdrop-blur">#}
+    {#        <div class="card-body">#}
+    {#          {% if messages %}#}
+    {#            <div class="space-y-2">#}
+    {#              {% for message in messages %}#}
+    {#                <div class="alert {{ message.tags|default:'info' }}">#}
+    {#                  <span>{{ message }}</span>#}
+    {#                </div>#}
+    {#              {% endfor %}#}
+    {#            </div>#}
+    {#          {% endif %}#}
+
+    {% block content %}{% endblock %}
+    {#        </div>#}
+    {#      </div>#}
+  </div>
+</div>
+</body>
+</html>{% endraw %}

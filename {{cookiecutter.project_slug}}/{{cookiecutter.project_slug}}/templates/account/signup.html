@@ -1,0 +1,92 @@
+<!-- templates/account/signup.html -->
+{% raw %}{% extends "account/base_auth.html" %}
+{% load i18n %}
+{% block title %}{% trans "Sign Up" %}{% endblock %}
+
+{% block content %}
+  <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs sm:w-sm md:w-md border p-4 shadow-xl backdrop-blur">
+    <div class="flex flex-col items-center mt-4 mb-6">
+      <h1 class="text-2xl font-semibold">{% trans "Create your account" %}</h1>
+      <p class="mt-1 text-sm opacity-70">{% trans "Start your journey in minutes" %}</p>
+    </div>
+
+    <form method="post" action="{% url 'account_signup' %}" class="w-full space-y-2" novalidate>
+      {% csrf_token %}
+      {#    {% if form.non_field_errors %}#}
+      {#      <div class="alert alert-error">#}
+      {#        <span>{{ form.non_field_errors|join:", " }}</span>#}
+      {#      </div>#}
+      {#    {% endif %}#}
+
+      <fieldset class="fieldset" id="email-field">
+        <label class="label" for="email">
+          <span class="label-text">{% trans "Email" %}</span>
+        </label>
+        <input
+          type="email"
+          name="email"
+          autocomplete="email"
+          required
+          placeholder="you@example.com"
+          class="input w-full"
+          value="{{ form.email.value|default_if_none:'' }}"
+        />
+        {% if form.email.errors %}
+          <p class="label break-words whitespace-normal">
+            <span class="label-text-alt text-error">{{ form.email.errors|join:"<br>" }}</span>
+          </p>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="fieldset" id="password1-field">
+        <label class="label" for="password1">
+          <span class="label-text">{% trans "Password" %}</span>
+        </label>
+        <input
+          type="password"
+          name="password1"
+          autocomplete="new-password"
+          required
+          class="input w-full"
+        />
+        {% if form.password1.errors %}
+          <p class="label break-words whitespace-normal">
+            <span class="label-text-alt text-error">{{ form.password1.errors|join:"<br>" }}</span>
+          </p>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="fieldset" id="password2-field">
+        <label class="label" for="password2">
+          <span class="label-text">{% trans "Confirm password" %}</span>
+        </label>
+        <input
+          type="password"
+          name="password2"
+          autocomplete="new-password"
+          required
+          class="input w-full"
+        />
+        {% if form.password2.errors %}
+          <p class="label break-words whitespace-normal">
+            <span class="label-text-alt text-error">{{ form.password2.errors|join:"<br>" }}</span>
+          </p>
+        {% endif %}
+      </fieldset>
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary w-full mt-4">{% trans "Get Started" %}</button>
+    </form>
+
+    {% include "account/_social_buttons.html" %}
+
+    <p class="mt-6 text-center text-sm">
+      {% trans "Already have an account?" %} <a
+      href="{% url 'account_login' %}{% if redirect_field_value %}?next={{ redirect_field_value }}{% endif %}"
+      class="link link-primary">{% trans "Log in" %}</a>
+    </p>
+  </fieldset>
+{% endblock %}{% endraw %}

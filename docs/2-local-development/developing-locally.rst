@@ -201,7 +201,7 @@ so that it can pick up any tasks that get queued. Learn more from the `Celery Wo
 The project comes with a simple task for manual testing purposes, inside `<project_slug>/users/tasks.py`. To queue that task locally, start the Django shell, import the task, and call `delay()` on it::
 
     uv run python manage.py shell
-    >> from <project_slug>.users.tasks import get_users_count
+    >> from <project_slug>.apps.users.tasks import get_users_count
     >> get_users_count.delay()
 
 You can also use Django admin to queue up tasks, thanks to the `django-celerybeat`_ package.

@@ -3,9 +3,9 @@
 {% block body %}
   <div class="drawer lg:drawer-open">
     <input id="my-drawer-4" type="checkbox" class="drawer-toggle"/>
-    <div class="drawer-content">
+    <div class="drawer-content flex flex-col">
       <!-- Navbar -->
-      <nav class="navbar w-full bg-base-300">
+      <nav class="navbar w-full bg-base-300 shadow">
         <label for="my-drawer-4" aria-label="open sidebar" class="btn btn-square btn-ghost">
           <!-- Sidebar toggle icon -->
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round"
@@ -15,20 +15,79 @@
             <path d="M14 10l2 2l-2 2"></path>
           </svg>
         </label>
-        <div class="px-4">Navbar Title</div>
+        <div class="grow">
+          <div class="px-4">Navbar Title</div>
+        </div>
+
+        <!-- Right side -->
+        <div class="flex-none mr-2">
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+              <div class="w-10 rounded-full">
+                <img
+                  alt="Tailwind CSS Navbar component"
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+              </div>
+            </div>
+            <ul
+              tabindex="-1"
+              class="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-4 w-52 p-2 shadow-xl">
+              <li>
+                <label class="flex cursor-pointer gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path
+                      d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+                  </svg>
+                  <input type="checkbox" value="dark" class="toggle theme-controller"/>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                  </svg>
+                </label>
+              </li>
+              <li><a>Settings</a></li>
+              <li><a>Logout</a></li>
+            </ul>
+          </div>
+        </div>
+
       </nav>
       <!-- Page content here -->
-      <div class="p-4">Page Content</div>
+      <div class="p-4 flex grow">
+        {% block content %}
+        {% endblock content %}
+      </div>
     </div>
 
-    <div class="drawer-side is-drawer-close:overflow-visible">
+    <div class="drawer-side is-drawer-close:overflow-visible shadow">
       <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
-      <div class="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
+      <div class="flex min-h-full flex-col items-start  bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
+        <div class="navbar w-full bg-base-200">
+        </div>
+
         <!-- Sidebar content here -->
         <ul class="menu w-full grow">
           <!-- List item -->
           <li>
-            <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
+            <a href="/" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
               <!-- Home icon -->
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round"
                    stroke-width="2" fill="none" stroke="currentColor" class="my-1.5 inline-block size-4">
@@ -36,22 +95,50 @@
                 <path
                   d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
               </svg>
-              <span class="is-drawer-close:hidden">Homepage</span>
-            </button>
+              <span class="is-drawer-close:hidden ml-4">Dashboard</span>
+            </a>
           </li>
-
           <!-- List item -->
+          <li>
+            <a href="/billing/" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Billing">
+              <!-- Settings icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                   stroke="currentColor" class="my-1.5 inline-block size-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z"/>
+              </svg>
+              <span class="is-drawer-close:hidden ml-4">Billing</span>
+            </a>
+          </li>
+        </ul>
+
+        {#        bottom menu#}
+        <ul class="menu w-full">
           <li>
             <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Settings">
               <!-- Settings icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                   stroke="currentColor" class="my-1.5 inline-block size-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+              </svg>
+              <span class="is-drawer-close:hidden ml-4">Settings</span>
+            </button>
+          </li>
+          <li>
+            <button
+              class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+              data-tip="Logout"
+              onclick="window.location.href='{% url 'account_logout' %}?next=/'"
+            >
+              <!-- Home icon -->
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round"
                    stroke-width="2" fill="none" stroke="currentColor" class="my-1.5 inline-block size-4">
-                <path d="M20 7h-9"></path>
-                <path d="M14 17H5"></path>
-                <circle cx="17" cy="17" r="3"></circle>
-                <circle cx="7" cy="7" r="3"></circle>
+                <path strokeLinecap="round" strokeLinejoin="round"
+                      d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
               </svg>
-              <span class="is-drawer-close:hidden">Settings</span>
+              <span class="is-drawer-close:hidden ml-4">Logout</span>
             </button>
           </li>
         </ul>

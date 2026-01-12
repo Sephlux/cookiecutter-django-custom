@@ -1,0 +1,65 @@
+{% raw %}{% extends "pages/home.html" %}
+{% load static %}
+{% load billing_extras %}
+
+{% block content %}
+<div class="container mx-auto p-6 max-w-5xl">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-3xl font-bold">Choose your plan</h1>
+    <div id="subscription-status"
+         hx-get="{% url 'billing:status_fragment' %}"
+         hx-trigger="load, every 30s"
+         hx-swap="outerHTML">
+      <div class="loading loading-spinner loading-md"></div>
+    </div>
+  </div>
+
+  {% if prices %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% for price in prices %}
+        <div class="card bg-base-100 shadow">
+          <div class="card-body">
+            <h2 class="card-title">
+              {{ plan_labels|dict_get:price.id|default:price.product.name }}
+            </h2>
+            <p class="text-sm opacity-70">
+              {{ plan_descriptions|dict_get:price.id|default:price.product.description }}
+            </p>
+            <div class="mt-4">
+              {% if price.recurring %}
+                <div class="text-3xl font-semibold">
+                  {{ price.unit_amount|floatformat:-2 }} {{ price.currency|upper }}
+                  <span class="text-sm font-normal opacity-70">/ {{ price.recurring.interval }}</span>
+                </div>
+              {% else %}
+                <div class="text-3xl font-semibold">
+                  {{ price.unit_amount|floatformat:-2 }} {{ price.currency|upper }}
+                </div>
+              {% endif %}
+            </div>
+            <div class="card-actions justify-end mt-6">
+              <form hx-post="{% url 'billing:subscribe' %}" hx-swap="none">
+                {% csrf_token %}
+                <input type="hidden" name="price_id" value="{{ price.id }}">
+                <button class="btn btn-primary">Subscribe</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning mt-6">
+      No plans configured. Please set STRIPE_PRICE_IDS in settings/env.
+    </div>
+  {% endif %}
+
+  <div class="mt-10">
+    <form hx-post="{% url 'billing:portal' %}" hx-swap="none">
+      {% csrf_token %}
+      <button class="btn">Open Billing Portal</button>
+    </form>
+  </div>
+</div>
+{% endblock content %}
+{% endraw %}

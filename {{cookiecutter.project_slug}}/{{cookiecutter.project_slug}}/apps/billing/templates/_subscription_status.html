@@ -1,0 +1,8 @@
+{% raw %}<div id="subscription-status" class="badge badge-outline">
+  {% if bc and bc.subscription_status %}
+    {{ bc.subscription_status|capfirst }}{% if bc.price_id %} ({{ bc.price_id }}){% endif %}
+  {% else %}
+    No active subscription
+  {% endif %}
+</div>
+{% endraw %}

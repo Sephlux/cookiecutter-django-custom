@@ -63,3 +63,5 @@ drf-spectacular==0.29.0  # https://github.com/tfranzel/drf-spectacular
 {%- if cookiecutter.frontend_pipeline == 'Webpack' %}
 django-webpack-loader==3.2.3  # https://github.com/django-webpack/django-webpack-loader
 {%- endif %}
+# custom:
+stripe==14.1.0

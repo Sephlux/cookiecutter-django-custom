@@ -136,7 +136,7 @@ def remove_gplv3_files():
 
 
 def remove_custom_user_manager_files():
-    users_path = Path("{{cookiecutter.project_slug}}", "users")
+    users_path = Path("{{cookiecutter.project_slug}}", "apps", "users")
     (users_path / "managers.py").unlink()
     (users_path / "tests" / "test_managers.py").unlink()
 
@@ -319,8 +319,8 @@ def remove_repo_from_pre_commit_config(repo_to_remove: str):
 def remove_celery_files():
     file_paths = [
         Path("config", "celery_app.py"),
-        Path("{{ cookiecutter.project_slug }}", "users", "tasks.py"),
-        Path("{{ cookiecutter.project_slug }}", "users", "tests", "test_tasks.py"),
+        Path("{{ cookiecutter.project_slug }}", "apps", "users", "tasks.py"),
+        Path("{{ cookiecutter.project_slug }}", "apps", "users", "tests", "test_tasks.py"),
     ]
     for file_path in file_paths:
         file_path.unlink()
@@ -507,8 +507,8 @@ def remove_aws_dockerfile():
 
 def remove_drf_starter_files():
     Path("config", "api_router.py").unlink()
-    shutil.rmtree(Path("{{cookiecutter.project_slug}}", "users", "api"))
-    shutil.rmtree(Path("{{cookiecutter.project_slug}}", "users", "tests", "api"))
+    shutil.rmtree(Path("{{cookiecutter.project_slug}}", "apps", "users", "api"))
+    shutil.rmtree(Path("{{cookiecutter.project_slug}}", "apps", "users", "tests", "api"))
 
 def _bool_from_ctx(value: str, default: bool = False) -> bool:
     if value is None:
@@ -590,11 +590,14 @@ def install_tailwind():
             print("uv is not installed or not on PATH; skipping init_tailwind.")
             return
 
-        subprocess.check_call([uv_path, "run", "python", "manage.py", "tailwind", "install"])
+        project_slug = Path("{{ cookiecutter.project_slug }}").resolve()
+        subprocess.check_call(
+            [uv_path, "run", "python", "../manage.py", "tailwind", "install"],
+            cwd=str(project_slug)
+        )
         app_name = "theme"
-        project_name = "{{ cookiecutter.project_name }}"
         # subprocess.run(
-        #     ["mv", app_name, f"./{project_name}/{app_name}"],
+        #     ["mv", app_name, f"./{project_slug}/{app_name}"],
         #     text=True,
         #     check=True
         # )
@@ -610,16 +613,18 @@ def init_tailwind():
             return
 
         app_name = "theme"
-        target_dir = Path(app_name)
+        project_slug = "{{ cookiecutter.project_slug }}"
+        target_dir = Path(f"{project_slug}/{app_name}")
         if target_dir.exists():
             print(f"[post_gen] Removing existing Tailwind app at: {target_dir}")
             shutil.rmtree(target_dir)
 
         subprocess.run(
-            [uv_path, "run", "python", "manage.py", "tailwind", "init", "--include-daisy-ui"],
+            [uv_path, "run", "python", "../manage.py", "tailwind", "init", "--include-daisy-ui"],
             input=f"{app_name}\n2\ny\n",
             text=True,
-            check=True
+            check=True,
+            cwd=str(Path(project_slug).resolve())
         )
         add_installed_app("theme", section="THIRD_PARTY_APPS")
         print("Tailwind init successfully!")

@@ -1,0 +1,30 @@
+<!-- templates/account/verification_sent.html -->
+{% raw %}{% extends "account/base_auth.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Verification email sent" %}{% endblock %}
+
+{% block content %}
+  <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs sm:w-sm md:w-md border p-4 shadow-xl backdrop-blur">
+    <div class="flex flex-col items-center mt-4 mb-6 text-center">
+      <h1 class="text-2xl font-semibold">{% trans "Check your inbox" %}</h1>
+      <p class="mt-2 text-sm opacity-70">
+        {% blocktrans %}
+          We’ve sent a verification link to your email address. Click the link to verify your account.
+          If you don’t see it, check your spam folder.
+        {% endblocktrans %}
+      </p>
+    </div>
+
+    <a href="{% url 'account_login' %}" class="btn btn-primary w-full">
+      {% trans "Back to login" %}
+    </a>
+
+    <p class="mt-4 text-center text-sm">
+      {% trans "Need to change your email or resend the link?" %}
+      <a href="{% url 'account_email' %}" class="link link-primary ml-1">
+        {% trans "Manage email" %}
+      </a>
+    </p>
+  </fieldset>
+{% endblock %}{% endraw %}

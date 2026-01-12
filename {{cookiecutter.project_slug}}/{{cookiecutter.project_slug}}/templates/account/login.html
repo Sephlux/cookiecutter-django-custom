@@ -1,0 +1,75 @@
+<!-- templates/account/login.html -->
+{% raw %}{% extends "account/base_auth.html" %}
+{% load i18n %}
+{% block title %}{% trans "Log in" %}{% endblock %}
+
+{% block content %}
+  <fieldset
+    class="fieldset bg-base-200 border-base-300 rounded-box w-xs sm:w-sm md:w-md border p-4 shadow-xl backdrop-blur">
+    {#    <legend class="fieldset-legend">Login</legend>#}
+    <div class="flex flex-col items-center mt-4 mb-6">
+      <h1 class="text-2xl font-semibold">{% trans "Welcome Back!" %}</h1>
+      <p class="mt-1 text-sm opacity-70">{% trans "Log in to your account" %}</p>
+    </div>
+    <form method="post" action="{% url 'account_login' %}" class="w-full space-y-2" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-error">
+          <span>{{ form.non_field_errors|join:", " }}</span>
+        </div>
+      {% endif %}
+      <fieldset class="fieldset" id="email-field">
+        <label class="label">{% trans "Email" %}</label>
+        <input type="text"
+               name="login"
+               autocomplete="username"
+               required
+               placeholder="you@example.com"
+               class="input w-full"
+               value="{{ form.login.value|default_if_none:'' }}"
+        />
+        {% if form.login.errors %}
+          <p class="label break-words whitespace-normal">
+            <span class="label-text-alt text-error">{{ form.login.errors|join:"<br>>" }}</span>
+          </p>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="fieldset" id="password-field">
+        <label class="label flex items-center justify-between">
+          {% trans "Password" %}
+          <a href="{% url 'account_reset_password' %}"
+             class="link link-primary text-xs">{% trans "Forgot your password?" %}</a>
+        </label>
+        <input
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          required
+          class="input w-full"
+        />
+        {% if form.password.errors %}
+          <p class="label break-words whitespace-normal">
+            <span class="label-text-alt text-error">{{ form.password.errors|join:"<br>" }}</span>
+          </p>
+        {% endif %}
+      </fieldset>
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+      {% endif %}
+
+      <button type="submit" class="btn btn-primary w-full mt-4">{% trans "Log in" %}</button>
+    </form>
+
+    {% include "account/_social_buttons.html" %}
+
+    <p class="mt-6 text-center text-sm">
+      {% trans "New to" %} YourSaaS?
+      <a href="{% url 'account_signup' %}{% if redirect_field_value %}?next={{ redirect_field_value }}{% endif %}"
+         class="link link-primary ml-2">
+        {% trans "Sign Up" %}
+      </a>
+    </p>
+  </fieldset>
+{% endblock %}{% endraw %}

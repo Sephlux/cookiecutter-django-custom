@@ -91,6 +91,7 @@ THIRD_PARTY_APPS = [
     "allauth.account",
     "allauth.mfa",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     "django_tables2",
     "django_htmx",
     "simple_history",
@@ -100,7 +101,6 @@ THIRD_PARTY_APPS = [
     "tailwind",
     "django_browser_reload",
     "django_hosts",
-    "landing_page",
 {%- if cookiecutter.use_celery == 'y' %}
     "django_celery_beat",
 {%- endif %}
@@ -116,7 +116,9 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "{{ cookiecutter.project_slug }}.users",
+    "{{ cookiecutter.project_slug }}.apps.users",
+    "{{ cookiecutter.project_slug }}.apps.billing",
+    "{{ cookiecutter.project_slug }}.apps.landing_page",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
@@ -137,9 +139,15 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+# LOGIN_REDIRECT_URL = "users:redirect"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
+LOGIN_REDIRECT_URL = "/"
+# Explicit for allauth (uses this if set)
+ACCOUNT_LOGIN_REDIRECT_URL = "/"
+# Where to go after logout
+ACCOUNT_LOGOUT_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_ON_GET = True
 
 # PASSWORDS
 # ------------------------------------------------------------------------------
@@ -157,7 +165,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    # {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
@@ -238,7 +246,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "{{cookiecutter.project_slug}}.users.context_processors.allauth_settings",
+                "{{cookiecutter.project_slug}}.apps.users.context_processors.allauth_settings",
             ],
         },
     },
@@ -378,13 +386,31 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_ADAPTER = "{{cookiecutter.project_slug}}.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "{{cookiecutter.project_slug}}.apps.users.adapters.AccountAdapter"
 # https://docs.allauth.org/en/latest/account/forms.html
-ACCOUNT_FORMS = {"signup": "{{cookiecutter.project_slug}}.users.forms.UserSignupForm"}
+ACCOUNT_FORMS = {"signup": "{{cookiecutter.project_slug}}.apps.users.forms.UserSignupForm"}
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_ADAPTER = "{{cookiecutter.project_slug}}.users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "{{cookiecutter.project_slug}}.apps.users.adapters.SocialAccountAdapter"
 # https://docs.allauth.org/en/latest/socialaccount/configuration.html
-SOCIALACCOUNT_FORMS = {"signup": "{{cookiecutter.project_slug}}.users.forms.UserSocialSignupForm"}
+SOCIALACCOUNT_FORMS = {"signup": "{{cookiecutter.project_slug}}.apps.users.forms.UserSocialSignupForm"}
+
+#todo
+# Recommended Google provider options (scopes/prompt)
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"prompt": "select_account"},
+        # Optional: keep users signed in on Google side for better UX
+        "APP": {
+            # Prefer storing credentials via Django Admin > Social Applications.
+            # If you must configure here (e.g. for ephemeral environments), set env vars:
+            # "client_id": env("GOOGLE_CLIENT_ID", default=""),
+            # "secret": env("GOOGLE_CLIENT_SECRET", default=""),
+            # "key": "",
+        },
+    }
+}
+
 {% if cookiecutter.frontend_pipeline == 'Django Compressor' -%}
 # django-compressor
 # ------------------------------------------------------------------------------
@@ -442,6 +468,18 @@ INTERNAL_IPS = ["127.0.0.1"]  # Required for live reload
 #tailwind config
 TAILWIND_APP_NAME = "theme"
 NPM_BIN_PATH = "npm.cmd"
+
+# Stripe billing settings
+STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
+STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
+STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
+# Comma-separated price IDs (e.g., "price_123,price_456")
+STRIPE_PRICE_IDS = env("STRIPE_PRICE_IDS", default="")
+# Optional labels/descriptions: provide JSON in env if you want
+PLAN_LABELS = env.json("PLAN_LABELS", default={})
+PLAN_DESCRIPTIONS = env.json("PLAN_DESCRIPTIONS", default={})
+STRIPE_CURRENCY = env("STRIPE_CURRENCY", default="usd")
+
 
 # django-hosts config
 ROOT_URLCONF = "config.urls"         # your normal URLConf
