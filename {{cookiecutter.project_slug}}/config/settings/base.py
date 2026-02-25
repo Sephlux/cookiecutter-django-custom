@@ -13,7 +13,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = BASE_DIR / "{{ cookiecutter.project_slug }}"
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+READ_DOT_ENV_FILE = True #env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
@@ -117,7 +117,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "{{ cookiecutter.project_slug }}.apps.users",
-    "{{ cookiecutter.project_slug }}.apps.billing",
+    "{{ cookiecutter.project_slug }}.apps.app_base",
     "{{ cookiecutter.project_slug }}.apps.landing_page",
     # Your stuff: custom apps go here
 ]
@@ -188,6 +188,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "{{ cookiecutter.project_slug }}.apps.app_base.middleware.OrganizationFromUrlMiddleware",
     "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -232,7 +233,11 @@ TEMPLATES = [
         # https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         # https://docs.djangoproject.com/en/dev/ref/settings/#dirs
-        "DIRS": [str(APPS_DIR / "templates")],
+        "DIRS": [
+            str(APPS_DIR / "templates"),
+            str(BASE_DIR / "{{ cookiecutter.project_slug }}" / "apps" / "app_base" / "templates" / "app_base" / "auth"),
+
+        ],
         # https://docs.djangoproject.com/en/dev/ref/settings/#app-dirs
         "APP_DIRS": True,
         "OPTIONS": {
@@ -300,26 +305,48 @@ DJANGO_ADMIN_FORCE_ALLAUTH = env.bool("DJANGO_ADMIN_FORCE_ALLAUTH", default=True
 # https://docs.djangoproject.com/en/dev/ref/settings/#logging
 # See https://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
+LOG_LEVEL = env.str("DJANGO_LOG_LEVEL", "INFO")
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     'filters': {
         'correlation_id': {
             '()': 'django_guid.log_filters.CorrelationId'
-        }
+        },
+        # "add_request_id": {
+        #             "()": "django.utils.log.CallbackFilter",
+        #             "callback": lambda record: True,  # placeholder if you want to filter
+        # },
     },
     "formatters": {
+        "simple": {
+            "format": "%(asctime)s %(levelname)s [%(correlation_id)s] [%(name)s] %(message)s",
+        },
         "verbose": {
-            "format": "%(levelname)s %(asctime)s [%(correlation_id)s] %(module)s %(process)d %(thread)d %(message)s",
+            "format": "%(asctime)s %(levelname)s [%(correlation_id)s] %(module)s %(process)d %(threadName)s [%(name)s:%(lineno)d] %(message)s",
         },
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": LOG_LEVEL,
             "class": "logging.StreamHandler",
-            "formatter": "verbose",
+            "formatter": "simple",
             'filters': ['correlation_id'],
         },
+    },
+    "loggers": {
+        # Your apps inherit this if they do: logging.getLogger(__name__)
+        "": {  # root logger
+            "level": LOG_LEVEL,
+            "handlers": ["console"],  # or ["console", "file"]
+        },
+        # Django internals you may want to tune
+        "django": {"level": LOG_LEVEL, "propagate": True},
+        "django.server": {"level": "INFO", "propagate": True},  # runserver requests
+        "django.request": {"level": "WARNING", "propagate": True},  # 4xx/5xx
+        "django.security": {"level": "WARNING", "propagate": True},
+        # SQL debug (very noisy; enable only when needed)
+        # "django.db.backends": {"level": "DEBUG", "handlers": ["console"], "propagate": False},
     },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
@@ -474,11 +501,12 @@ STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY", default="")
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY", default="")
 STRIPE_WEBHOOK_SECRET = env("STRIPE_WEBHOOK_SECRET", default="")
 # Comma-separated price IDs (e.g., "price_123,price_456")
-STRIPE_PRICE_IDS = env("STRIPE_PRICE_IDS", default="")
+# STRIPE_PRICE_IDS = env("STRIPE_PRICE_IDS", default="")
+STRIPE_PRODUCT_IDS = env("STRIPE_PRODUCT_IDS", default="")
 # Optional labels/descriptions: provide JSON in env if you want
 PLAN_LABELS = env.json("PLAN_LABELS", default={})
 PLAN_DESCRIPTIONS = env.json("PLAN_DESCRIPTIONS", default={})
-STRIPE_CURRENCY = env("STRIPE_CURRENCY", default="usd")
+STRIPE_CURRENCY = env("STRIPE_CURRENCY", default="eur")
 
 
 # django-hosts config

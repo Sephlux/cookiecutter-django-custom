@@ -1,0 +1,8 @@
+{% raw %}{% load billing_extras %}
+{# expects: products, plan_labels, plan_descriptions, plan_features, bc, interval #}
+<div id="plans-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {% for item in products %}
+    {% include "app_base/billing/_plan_card.html" with prod=item.product mp=item.monthly_price yp=item.yearly_price bc=bc plan_labels=plan_labels plan_descriptions=plan_descriptions plan_features=plan_features index=forloop.counter interval=interval %}
+  {% endfor %}
+</div>
+{%- endraw %}

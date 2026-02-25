@@ -1,6 +1,6 @@
 {
   "project_name": "Cookiecutter Test",
-  "project_slug": "{{ cookiecutter.project_name.lower()|replace(' ', '_')|replace('-', '_')|replace('.', '_')|trim() }}",
+  "project_slug": "src",
   "description": "test",
   "author_name": "Michael Raimer",
   "domain_name": "example.com",

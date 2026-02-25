@@ -351,3 +351,5 @@ vendors.js
 {{ cookiecutter.project_slug }}/static/webpack_bundles/
 webpack-stats.json
 {%- endif %}
+
+.env

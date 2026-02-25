@@ -1,0 +1,51 @@
+{% raw %}{% load billing_extras %}
+{% load org_urls %}
+<div class="flex items-center justify-center mb-10">
+  <div
+    class="relative inline-flex items-center rounded-2xl border border-base-300/60 bg-base-100/70 p-1 shadow-sm backdrop-blur">
+    <div
+      class="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/10 via-transparent to-fuchsia-500/10"></div>
+
+    <div class="pointer-events-none absolute -top-3 -right-3 z-10">
+      <div
+        class="rounded-full px-3 py-1 text-[11px] font-semibold text-white shadow-md bg-gradient-to-r from-purple-600 to-fuchsia-600">
+        Save 2 months
+      </div>
+    </div>
+
+    <button type="button"
+            class="cursor-pointer relative px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
+                   focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100
+                   {% if interval == 'month' %}bg-base-100 shadow text-base-content{% else %}text-base-content/70 hover:text-base-content{% endif %}"
+            hx-get="{% org_url 'billing:plans_section_fragment' %}?interval=month"
+            hx-target="#plans-section"
+            hx-swap="outerHTML"
+            hx-indicator="#plans-toggle-indicator">
+      Monthly
+    </button>
+
+    <button type="button"
+            class="cursor-pointer relative px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
+                   focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500/60 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100
+                   {% if interval == 'year' %}bg-base-100 shadow text-base-content{% else %}text-base-content/70 hover:text-base-content{% endif %}"
+            hx-get="{% org_url 'billing:plans_section_fragment' %}?interval=year"
+            hx-target="#plans-section"
+            hx-swap="outerHTML"
+            hx-indicator="#plans-toggle-indicator">
+      Yearly
+      <span
+        class="ml-2 inline-flex items-center justify-center size-5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-200 align-middle">
+        <!-- ... existing icon ... -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </span>
+    </button>
+
+    <div id="plans-toggle-indicator" class="absolute right-2 top-1/2 -translate-y-1/2 hidden">
+      <span class="loading loading-spinner loading-xs opacity-70"></span>
+    </div>
+  </div>
+</div>
+{%- endraw %}

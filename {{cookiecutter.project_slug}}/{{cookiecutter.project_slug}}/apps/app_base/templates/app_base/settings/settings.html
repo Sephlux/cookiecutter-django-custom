@@ -1,0 +1,202 @@
+{% raw %}{% extends "app_base/home.html" %}
+{% load org_urls %}
+
+{% block navbar_title %}Settings{% endblock navbar_title %}
+{% block page_title %}Page Title{% endblock page_title %}
+{% block page_subtitle %}
+  Short explanation of what this page is for. Add clarity, set expectations, and reduce user confusion.
+{% endblock page_subtitle %}
+
+{% block page_actions %}
+  <button class="btn btn-ghost rounded-xl">Secondary action</button>
+  <button class="btn btn-primary rounded-xl">Primary action</button>
+{% endblock page_actions %}
+
+{% block content %}
+
+  <!-- Card: Overview / KPIs -->
+  <section class="card rounded-3xl border border-base-300/60 bg-base-100/70 backdrop-blur shadow-sm">
+    <div class="card-body p-6 md:p-8">
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+          <h2 class="text-lg md:text-xl font-semibold tracking-tight">Overview</h2>
+          <p class="mt-1 text-sm text-base-content/70">
+            Quick summary of what matters right now. Use this area for lightweight context.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="badge badge-outline">Status: OK</span>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="rounded-2xl border border-base-300/60 bg-base-100 p-5">
+          <div class="text-sm text-base-content/60">Metric label</div>
+          <div class="mt-2 text-2xl font-semibold tracking-tight">123</div>
+          <div class="mt-1 text-xs text-base-content/60">Compared to last period</div>
+        </div>
+        <div class="rounded-2xl border border-base-300/60 bg-base-100 p-5">
+          <div class="text-sm text-base-content/60">Metric label</div>
+          <div class="mt-2 text-2xl font-semibold tracking-tight">45%</div>
+          <div class="mt-1 text-xs text-base-content/60">Compared to last period</div>
+        </div>
+        <div class="rounded-2xl border border-base-300/60 bg-base-100 p-5">
+          <div class="text-sm text-base-content/60">Metric label</div>
+          <div class="mt-2 text-2xl font-semibold tracking-tight">9</div>
+          <div class="mt-1 text-xs text-base-content/60">Compared to last period</div>
+        </div>
+        <div class="rounded-2xl border border-base-300/60 bg-base-100 p-5">
+          <div class="text-sm text-base-content/60">Metric label</div>
+          <div class="mt-2 text-2xl font-semibold tracking-tight">$1,234</div>
+          <div class="mt-1 text-xs text-base-content/60">Compared to last period</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Card: Main content area -->
+  <section class="card rounded-3xl border border-base-300/60 bg-base-100/70 backdrop-blur shadow-sm">
+    <div class="card-body p-6 md:p-8">
+      <h2 class="text-lg md:text-xl font-semibold tracking-tight">Main section</h2>
+      <p class="mt-1 text-sm text-base-content/70">
+        Use this card for the primary tasks of the page (forms, configuration, workflows).
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Left: form-like content -->
+        <div class="lg:col-span-2 rounded-2xl border border-base-300/60 bg-base-100 p-5">
+          <div class="flex items-center justify-between gap-3">
+            <h3 class="font-semibold">Settings panel</h3>
+            <button class="btn btn-sm btn-ghost rounded-lg">Reset</button>
+          </div>
+
+          <div class="mt-4 space-y-4">
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text font-medium">Field label</span>
+              </div>
+              <input class="input input-bordered w-full rounded-xl" placeholder="Placeholder value" />
+              <div class="label">
+                <span class="label-text-alt text-base-content/60">Helper text to prevent mistakes.</span>
+              </div>
+            </label>
+
+            <label class="form-control w-full">
+              <div class="label">
+                <span class="label-text font-medium">Another field</span>
+              </div>
+              <select class="select select-bordered w-full rounded-xl">
+                <option selected>Option A</option>
+                <option>Option B</option>
+                <option>Option C</option>
+              </select>
+            </label>
+
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+              <label class="label cursor-pointer justify-start gap-3">
+                <input type="checkbox" class="toggle" />
+                <span class="label-text">Enable something</span>
+              </label>
+
+              <div class="flex items-center gap-2">
+                <button class="btn btn-outline rounded-xl">Cancel</button>
+                <button class="btn btn-primary rounded-xl">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: guidance / help / summary -->
+        <aside class="rounded-2xl border border-base-300/60 bg-base-100 p-5">
+          <h3 class="font-semibold">Tips</h3>
+          <p class="mt-1 text-sm text-base-content/70">
+            Use this area for short guidance, links, or a summary of changes.
+          </p>
+
+          <div class="mt-4 space-y-3">
+            <div class="rounded-xl border border-base-300/60 bg-base-200/40 p-4">
+              <div class="text-sm font-medium">Recommendation</div>
+              <div class="mt-1 text-sm text-base-content/70">
+                Short actionable advice that helps the user succeed.
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-base-300/60 bg-base-200/40 p-4">
+              <div class="text-sm font-medium">What happens next?</div>
+              <div class="mt-1 text-sm text-base-content/70">
+                Explain side effects, delays, or approvals in one or two sentences.
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Card: Table / List -->
+  <section class="card rounded-3xl border border-base-300/60 bg-base-100/70 backdrop-blur shadow-sm">
+    <div class="card-body p-6 md:p-8">
+      <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <h2 class="text-lg md:text-xl font-semibold tracking-tight">Recent activity</h2>
+          <p class="mt-1 text-sm text-base-content/70">A list/table area for audits, logs, items, or history.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input class="input input-bordered rounded-xl w-full md:w-72" placeholder="Search…" />
+          <button class="btn btn-ghost rounded-xl">Filter</button>
+        </div>
+      </div>
+
+      <div class="mt-6 overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+            <tr>
+              <th class="min-w-48">Column</th>
+              <th class="min-w-48">Column</th>
+              <th class="min-w-40">Status</th>
+              <th class="min-w-40 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="font-medium">Row item title</td>
+              <td class="text-base-content/70">Secondary detail</td>
+              <td><span class="badge badge-outline">Pending</span></td>
+              <td class="text-right">
+                <button class="btn btn-sm btn-ghost rounded-lg">View</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="font-medium">Row item title</td>
+              <td class="text-base-content/70">Secondary detail</td>
+              <td><span class="badge badge-success badge-outline">Active</span></td>
+              <td class="text-right">
+                <button class="btn btn-sm btn-ghost rounded-lg">View</button>
+              </td>
+            </tr>
+            <tr>
+              <td class="font-medium">Row item title</td>
+              <td class="text-base-content/70">Secondary detail</td>
+              <td><span class="badge badge-error badge-outline">Failed</span></td>
+              <td class="text-right">
+                <button class="btn btn-sm btn-ghost rounded-lg">View</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between">
+        <p class="text-xs text-base-content/60">Showing 1–3 of 3</p>
+        <div class="join">
+          <button class="btn btn-sm join-item">Prev</button>
+          <button class="btn btn-sm join-item btn-active">1</button>
+          <button class="btn btn-sm join-item">Next</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock content %}
+{%- endraw %}

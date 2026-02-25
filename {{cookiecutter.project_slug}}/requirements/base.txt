@@ -65,3 +65,4 @@ django-webpack-loader==3.2.3  # https://github.com/django-webpack/django-webpack
 {%- endif %}
 # custom:
 stripe==14.1.0
+django-organizations==2.5.0

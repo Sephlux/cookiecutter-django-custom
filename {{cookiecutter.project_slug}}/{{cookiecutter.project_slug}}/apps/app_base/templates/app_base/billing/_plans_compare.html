@@ -1,0 +1,64 @@
+{% raw %}{% load billing_extras %}
+{# expects: products, plan_labels, plan_features #}
+
+<div class="mt-10">
+  <div class="collapse collapse-arrow rounded-2xl border border-base-300/60 bg-base-100/70 backdrop-blur">
+    <input type="checkbox" />
+    <div class="collapse-title text-base font-semibold">
+      Compare plans
+      <span class="ml-2 text-sm font-normal text-base-content/60">See what’s included</span>
+    </div>
+
+    <div class="collapse-content">
+      <div class="overflow-x-auto">
+        <table class="table table-zebra w-full">
+          <thead>
+          <tr>
+            <th class="min-w-56">Plan</th>
+            <th>Features</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for item in products %}
+            {% with prod=item.product %}
+            <tr>
+              <td class="align-top font-semibold">
+                {{ plan_labels|dict_get:prod.id|default:prod.name }}
+              </td>
+              <td class="align-top">
+                {% with features=plan_features|default:''|dict_get:prod.id %}
+                  {% if features %}
+                    <ul class="space-y-1">
+                      {% for feat in features %}
+                        <li class="flex items-start gap-2">
+                          <span class="mt-0.5 inline-flex size-5 items-center justify-center rounded-full bg-green-500/10 text-green-600 dark:text-green-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                          </span>
+                          <span class="text-sm text-base-content/80">{{ feat }}</span>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% elif prod.metadata.features %}
+                    <div class="prose prose-sm max-w-none opacity-80">{{ prod.metadata.features }}</div>
+                  {% else %}
+                    <span class="text-sm text-base-content/60">—</span>
+                  {% endif %}
+                {% endwith %}
+              </td>
+            </tr>
+            {% endwith %}
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 text-xs text-base-content/55">
+        Tip: mark a plan as popular in Stripe by setting <code class="px-1 py-0.5 rounded bg-base-200">metadata.popular="true"</code>.
+      </div>
+    </div>
+  </div>
+</div>
+{%- endraw %}

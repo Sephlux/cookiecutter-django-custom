@@ -151,3 +151,8 @@ You can find a list of available variables [in the bootstrap source](https://git
 
 Bootstrap's javascript as well as its dependencies are concatenated into a single file: `static/js/vendors.js`.
 {%- endif %}
+
+### Running Local
+
+- uv run python manage.py runserver 0.0.0.0:8080
+- uv run python manage.py tailwind start
