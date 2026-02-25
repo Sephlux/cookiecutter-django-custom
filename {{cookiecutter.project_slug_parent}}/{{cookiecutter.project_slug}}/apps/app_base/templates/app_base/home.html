@@ -1,22 +1,58 @@
 {% raw %}
-{% extends "base.html" %}
+{% extends "app_base/base.html" %}
+{% load org_urls %}
+
 {% block body %}
-  <div class="drawer lg:drawer-open">
-    <input id="my-drawer-4" type="checkbox" class="drawer-toggle"/>
-    <div class="drawer-content flex flex-col">
+  <div class="drawer lg:drawer-open"
+       x-data="{ ...drawerState() }"
+       x-init="initDrawer();"
+       x-cloak
+  >
+    <input id="my-drawer-4" type="checkbox" class="drawer-toggle" x-model="drawerOpen"/>
+    <div class="drawer-content flex flex-col relative">
       <!-- Navbar -->
-      <nav class="navbar w-full bg-base-300 shadow">
-        <label for="my-drawer-4" aria-label="open sidebar" class="btn btn-square btn-ghost">
+      <nav class="navbar w-full bg-base-300 shadow sticky top-0 z-10">
+        <label for="my-drawer-4" aria-label="open sidebar" class="btn btn-square btn-ghost border-0" id="nav-button">
           <!-- Sidebar toggle icon -->
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round"
-               stroke-width="2" fill="none" stroke="currentColor" class="my-1.5 inline-block size-4">
+          <svg
+            class="lg:hidden my-1.5 inline-block size-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path x-show="!drawerOpen" x-cloak d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+
+          <!-- Large screens: rotate based on drawer state -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            stroke-width="2"
+            fill="none"
+            stroke="currentColor"
+            class="hidden lg:inline-block my-1.5 size-4"
+            :class="{
+              'transition-transform duration-200 ease-out': drawerReady,
+              'rotate-180': drawerOpen,
+              'rotate-0': !drawerOpen
+            }"
+            aria-hidden="true"
+          >
             <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
             <path d="M9 4v16"></path>
             <path d="M14 10l2 2l-2 2"></path>
           </svg>
+
         </label>
         <div class="grow">
-          <div class="px-4">Navbar Title</div>
+          <div class="px-4">{% block navbar_title %}Navbar Title{% endblock navbar_title %}</div>
         </div>
 
         <!-- Right side -->
@@ -26,68 +62,130 @@
               <div class="w-10 rounded-full">
                 <img
                   alt="Tailwind CSS Navbar component"
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+                  src="https://api.dicebear.com/9.x/initials/png?seed={{ request.user.email|default:request.user.get_username|urlencode }}"/>
               </div>
             </div>
             <ul
               tabindex="-1"
               class="menu menu-sm dropdown-content bg-base-200 rounded-box z-1 mt-4 w-52 p-2 shadow-xl">
+              <li class="m-auto text-xs text-gray-600">
+                {{ request.user.email|default:request.user.get_username }}
+              </li>
+              <div class="divider mx-4 my-2 h-[1px]"></div>
               <li>
-                <label class="flex cursor-pointer gap-2">
+                <label
+                  class="swap swap-rotate justify-start inline-grid"
+                  data-tip="Toggle Theme">
+                  <!-- this hidden checkbox controls the state -->
+                  <input type="checkbox" class="theme-controller" x-model="isDark" value="dark"/>
+                  <!-- sun icon -->
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"/>
+                    class="swap-off fill-current inline-block size-4"
+                    xmlns="http://www.w3.org/2000/svg" stroke-width="2"
+                    viewBox="0 0 24 24">
                     <path
-                      d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+                      d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
                   </svg>
-                  <input type="checkbox" value="dark" class="toggle theme-controller"/>
+                  <!-- moon icon -->
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    class="swap-on fill-current inline-block size-4"
+                    xmlns="http://www.w3.org/2000/svg" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path
+                      d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
                   </svg>
+                  <span class="w-full ml-5">
+                  <span class="inline-block visibility-hidden size-4"></span>
+                    Toggle Theme
+                  </span>
                 </label>
               </li>
-              <li><a>Settings</a></li>
-              <li><a>Logout</a></li>
+              <li>
+                <a href="{% org_url 'settings' %}">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                       stroke="currentColor" class="inline-block size-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                  </svg>
+                  <span class="ml-4">
+                    Settings
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a onclick="window.location.href='{% url 'account_logout' %}?next=/'">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="round"
+                       stroke-linecap="round"
+                       stroke-width="2" fill="none" stroke="currentColor" class="inline-block size-4">
+                    <path strokeLinecap="round" strokeLinejoin="round"
+                          d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+                  </svg>
+                  <span class="ml-4">
+                    Logout
+                  </span>
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
       </nav>
+
       <!-- Page content here -->
-      <div class="p-4 flex grow">
-        {% block content %}
-        {% endblock content %}
+      <div class="p-6 flex grow">
+        <div id="nav-loading"
+             class="hidden fixed inset-0 z-50 pointer-events-none bg-base-100/60 backdrop-blur-sm">
+          <div class="h-full w-full grid place-items-center">
+            <span class="loading loading-spinner loading-lg"></span>
+          </div>
+        </div>
+
+        <div class="w-full max-w-6xl mx-auto" id="page-content">
+          <!-- Standard page header (title + subtitle + actions) -->
+          <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div class="min-w-0">
+              <h1 class="text-2xl md:text-4xl font-semibold tracking-tight">
+                {% block page_title %}{% endblock page_title %}
+              </h1>
+              <p class="mt-2 text-sm md:text-base text-base-content/70 max-w-3xl">
+                {% block page_subtitle %}{% endblock page_subtitle %}
+              </p>
+            </div>
+            <div class="flex items-center gap-2">
+              {% block page_actions %}{% endblock page_actions %}
+            </div>
+          </div>
+          <!-- Page body (cards/content) -->
+          <div class="space-y-6">
+            {% block content %}{% endblock content %}
+          </div>
+        </div>
       </div>
     </div>
-
     <div class="drawer-side is-drawer-close:overflow-visible shadow">
       <label for="my-drawer-4" aria-label="close sidebar" class="drawer-overlay"></label>
       <div class="flex min-h-full flex-col items-start  bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
-        <div class="navbar w-full bg-base-200">
+        <div class="navbar w-full">
+          <ul class="menu w-full grow p-0">
+            <li>
+              <a href="{% org_url 'home' %}" class="w-full p-0 flex items-center is-drawer-close:flex-col">
+                <svg class="my-1.5 inline-block size-10 is-drawer-close:size-8"
+                     data-jdenticon-value="{{ brand_name|default:'My Brand' }}"></svg>
+                <span class="is-drawer-close:hidden ml-4">
+              {{ brand_name|default:'My Brand' }}
+            </span>
+              </a>
+            </li>
+          </ul>
         </div>
-
+        <div class="divider my-0 mx-3 h-[1px]"></div>
         <!-- Sidebar content here -->
         <ul class="menu w-full grow">
           <!-- List item -->
           <li>
-            <a href="/%7B%7Bcookiecutter.project_slug%7D%7D/static" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
+            <a href="{% org_url 'home' %}" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+               data-tip="Dashboard">
               <!-- Home icon -->
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linejoin="round" stroke-linecap="round"
                    stroke-width="2" fill="none" stroke="currentColor" class="my-1.5 inline-block size-4">
@@ -100,8 +198,8 @@
           </li>
           <!-- List item -->
           <li>
-            <a href="/billing/" class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Billing">
-              <!-- Settings icon -->
+            <a href="{% org_url 'billing:plans' %}" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+               data-tip="Billing">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                    stroke="currentColor" class="my-1.5 inline-block size-4">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -113,10 +211,12 @@
         </ul>
 
         {#        bottom menu#}
+        <div class="divider my-0 mx-3 h-[1px]"></div>
         <ul class="menu w-full">
           <li>
-            <button class="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Settings">
-              <!-- Settings icon -->
+            <!-- Settings icon -->
+            <a href="{% org_url 'settings' %}" class="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+               data-tip="Settings">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                    stroke="currentColor" class="my-1.5 inline-block size-4">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -124,7 +224,35 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
               </svg>
               <span class="is-drawer-close:hidden ml-4">Settings</span>
-            </button>
+            </a>
+          </li>
+          <li class="flex w-full">
+            <label
+              class="swap swap-rotate justify-start is-drawer-close:tooltip is-drawer-close:tooltip-right inline-grid"
+              data-tip="Toggle Theme">
+              <!-- this hidden checkbox controls the state -->
+              <input type="checkbox" class="theme-controller" x-model="isDark" value="dark"/>
+              <!-- sun icon -->
+              <svg
+                class="swap-off fill-current my-1.5 inline-block size-4"
+                xmlns="http://www.w3.org/2000/svg" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path
+                  d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+              </svg>
+              <!-- moon icon -->
+              <svg
+                class="swap-on fill-current my-1.5 inline-block size-4"
+                xmlns="http://www.w3.org/2000/svg" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path
+                  d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
+              </svg>
+              <span class="is-drawer-close:hidden w-full ml-5">
+              <span class="inline-block visibility-hidden size-4"></span>
+                Toggle Theme
+              </span>
+            </label>
           </li>
           <li>
             <button

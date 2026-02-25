@@ -27,7 +27,8 @@
   </a>
 
   <div class="hidden items-center md:gap-8 lg:gap-12 md:flex lg:pl-20">
-    <a href="/%7B%7Bcookiecutter.project_slug%7D%7D/apps/landing_page_page/static" class="hover:text-slate-600 dark:hover:text-slate-300">Home</a>
+    <a href="/%7B%7Bcookiecutter.project_slug%7D%7D/apps/landing_page_page/static"
+       class="hover:text-slate-600 dark:hover:text-slate-300">Home</a>
     <a href="#features-section" class="hover:text-slate-600 dark:hover:text-slate-300">Features</a>
     <a href="#pricing-section" class="hover:text-slate-600 dark:hover:text-slate-300">Pricing</a>
     <a href="/docs" class="hover:text-slate-600 dark:hover:text-slate-300">Docs</a>
@@ -39,7 +40,9 @@
     <a href="#features-section">Features</a>
     <a href="#pricing-section">Pricing</a>
     <a href="/docs">Docs</a>
-    <button>Sign in</button>
+    <a href="http://app.localhost:8080">
+      <button href="http://app.localhost:8080/signup/?next=/">Sign in</button>
+    </a>
     <button id="closeMenu"
             class="aspect-square size-10 p-1 items-center justify-center bg-purple-600 hover:bg-purple-700 transition text-white rounded-md flex">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -63,11 +66,13 @@
       </svg>
     </button>
 
-    <button
-      class="hidden md:block hover:bg-slate-100 dark:hover:bg-purple-950 transition px-4 py-2 border border-purple-600 rounded-md">
-      Sign in
-    </button>
     <a href="http://app.localhost:8080">
+      <button
+        class="hidden md:block hover:bg-slate-100 dark:hover:bg-purple-950 transition px-4 py-2 border border-purple-600 rounded-md">
+        Sign in
+      </button>
+    </a>
+    <a href="http://app.localhost:8080/signup/?next=/">
       <button class="hidden md:block px-4 py-2 bg-purple-600 hover:bg-purple-700 transition text-white rounded-md">
         Get started
       </button>
@@ -225,7 +230,8 @@
         <h2 class="font-semibold mb-5">Company</h2>
         <ul class="space-y-2">
           <li>
-            <a href="/%7B%7Bcookiecutter.project_slug%7D%7D/apps/landing_page_page/static" class="hover:text-purple-600 transition">Home</a>
+            <a href="/%7B%7Bcookiecutter.project_slug%7D%7D/apps/landing_page_page/static"
+               class="hover:text-purple-600 transition">Home</a>
           </li>
           <li>
             <a href="/features" class="hover:text-purple-600 transition">Features</a>
