@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
-from .models import User
+from .models import User, UserOrganizationState
 from organizations.models import OrganizationUser, OrganizationOwner, Organization
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
