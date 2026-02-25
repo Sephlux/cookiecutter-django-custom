@@ -1,5 +1,6 @@
 {
   "project_name": "Cookiecutter Test",
+  "project_slug_parent": "cookiecutter_test",
   "project_slug": "src",
   "description": "test",
   "author_name": "Michael Raimer",

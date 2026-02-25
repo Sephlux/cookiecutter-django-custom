@@ -1,7 +1,0 @@
-{% raw %}{% load billing_extras %}
-<div id="plans-section">
-  {% include "app_base/billing/_pricing_toggle.html" with interval=interval %}
-  {% include "app_base/billing/_plans_grid.html" with products=products bc=bc plan_labels=plan_labels plan_descriptions=plan_descriptions plan_features=plan_features interval=interval %}
-  {% include "app_base/billing/_plans_compare.html" with products=products plan_labels=plan_labels plan_features=plan_features %}
-</div>
-{%- endraw %}

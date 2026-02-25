@@ -3,8 +3,8 @@ name: align versions
 on:
   pull_request:
     paths:
-      - "{{cookiecutter.project_slug}}/requirements/local.txt"
-      - "{{cookiecutter.project_slug}}/compose/local/node/Dockerfile"
+      - "../../{{cookiecutter.project_slug_parent}}/requirements/local.txt"
+      - "../../{{cookiecutter.project_slug_parent}}/compose/local/node/Dockerfile"
   # Manual trigger
   workflow_dispatch:
 
